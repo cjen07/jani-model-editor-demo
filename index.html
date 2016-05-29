@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <link rel="stylesheet" href="./css/font-awesome.min.css">
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+
+</head>
+<body>
+  <div id='editor_holder'></div>
+  <button id='submit'>Submit (console.log)</button>
+</body>
+  <script src="./js-schema.min.js"></script>
+  <script src="./jsoneditor.min.js"></script>
+  <script src="./dice_new.js"></script>
+  <script>
+      var Identifier = /[_a-zA-Z][_a-zA-Z0-9]*/;
+      var BasicType1 = schema(["bool", "int", "real"]);
+      var BasicType2 = schema(["bool", "int", "real"]);
+      var ConstantValue = schema([
+        Number,
+        true, false
+        ]);
+      var BoundedType = schema({
+        "kind": "bounded",
+        "base": BasicType2,
+        "lower-bound": Number,
+        "upper-bound": Number
+      });
+      var Type = schema([BasicType1, BoundedType]);
+      var Model = schema({
+        "variables": Array.of({
+          "name": Identifier,
+          "type": Type,
+          "initial-value": ConstantValue
+        })
+      })
+
+      var s = Model.toJSON();
+      s.title = "jani-model";
+      var editor = new JSONEditor(document.getElementById('editor_holder'),{
+        schema: s,
+        form_name_root: "haha",
+        startval: {variables: model.variables},
+        disable_properties: true,
+        required_by_default: true,
+        theme: "bootstrap2",
+        iconlib: "fontawesome4"
+      });
+      
+      // Hook up the submit button to log to the console
+      document.getElementById('submit').addEventListener('click',function() {
+        // Get the value from the editor
+        console.log(editor.getValue());
+      });
+    
+  </script>
+</html>
